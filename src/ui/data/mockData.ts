@@ -1,0 +1,150 @@
+import type { Attention, Metric, Outreach, Patient, ReportOption, Screen } from '../types'
+
+export const screens: Screen[] = ['Inicio', 'Operativos', 'Pacientes', 'Atenciones', 'Reportes']
+
+export const primaryActions: Record<Screen, string> = {
+  Inicio: 'Nuevo operativo',
+  Operativos: 'Nuevo operativo',
+  Pacientes: 'Nuevo paciente',
+  Atenciones: 'Nueva atención',
+  Reportes: 'Exportar',
+}
+
+export const metrics: Metric[] = [
+  { value: '3', label: 'Operativos activos', tone: 'primary' },
+  { value: '1,332', label: 'Pacientes', tone: 'accent' },
+  { value: '248', label: 'Atenciones', tone: 'warning' },
+  { value: '6', label: 'Reportes', tone: 'coral' },
+]
+
+export const outreaches: Outreach[] = [
+  {
+    initials: 'JA',
+    name: 'Jornada Batey Aleman',
+    location: 'San Pedro de Macoris',
+    date: '27/04/2026',
+    status: 'Activo',
+    statusValue: '1',
+    tone: 'soft',
+  },
+  {
+    initials: 'CF',
+    name: 'Chequeo familiar',
+    location: 'Batey Aleman',
+    date: '24/04/2026',
+    status: 'Activo',
+    statusValue: '1',
+    tone: 'soft',
+  },
+  {
+    initials: 'SP',
+    name: 'Seguimiento pediátrico',
+    location: 'Centro comunitario',
+    date: '18/04/2026',
+    status: 'Cerrado',
+    statusValue: '0',
+    tone: 'sun',
+  },
+]
+
+export const patients: Patient[] = [
+  {
+    firstName: 'Ana',
+    initials: 'AP',
+    lastName: 'Perez',
+    name: 'Ana Perez',
+    document: '00112345678',
+    phone: '8095550134',
+    address: 'Batey Aleman',
+    bloodType: 'O+',
+    allergies: 'Ninguna registrada',
+    condition: 'Hipertensión',
+    tone: 'sun',
+  },
+  {
+    firstName: 'Luis',
+    initials: 'LR',
+    lastName: 'Rodriguez',
+    name: 'Luis Rodriguez',
+    document: '00187654321',
+    phone: '8095550188',
+    address: 'San Pedro',
+    bloodType: 'A+',
+    allergies: 'Polvo',
+    condition: 'Ninguna',
+    tone: 'soft',
+  },
+  {
+    firstName: 'Maria',
+    initials: 'MG',
+    lastName: 'Garcia',
+    name: 'Maria Garcia',
+    document: '00144556677',
+    phone: '8095550112',
+    address: 'Centro comunitario',
+    bloodType: 'B+',
+    allergies: 'Alergias',
+    condition: 'Alergias',
+    tone: 'rose',
+  },
+]
+
+export const attentions: Attention[] = [
+  {
+    day: '27',
+    patient: 'Ana Perez',
+    doctor: 'Dra. Santos',
+    medication: 'Acetaminofen',
+    date: '27/04/2026',
+    operativeId: '1',
+    status: 'Hoy',
+    patientId: '1',
+    tone: 'sun',
+  },
+  {
+    day: '27',
+    patient: 'Luis Rodriguez',
+    doctor: 'Dr. Peña',
+    medication: 'Loratadina',
+    date: '27/04/2026',
+    operativeId: '1',
+    status: 'Hoy',
+    patientId: '2',
+    tone: 'soft',
+  },
+  {
+    day: '24',
+    patient: 'Maria Garcia',
+    doctor: 'Dra. Soto',
+    medication: 'Suero oral',
+    date: '24/04/2026',
+    operativeId: '1',
+    status: 'Abr',
+    patientId: '3',
+    tone: 'blue',
+  },
+]
+
+export const reportCards: ReportOption[] = [
+  {
+    title: 'Operativos',
+    description: 'Listado general de jornadas médicas por fecha, ubicación y estado.',
+    endpoints: ['GET /reports/operations/pdf', 'GET /reports/operations/excel'],
+  },
+  {
+    title: 'Pacientes por operativo',
+    description: 'Personas atendidas dentro de una jornada específica.',
+    endpoints: [
+      'GET /reports/operations/patients/pdf?id=',
+      'GET /reports/operations/patients/excel?id=',
+    ],
+  },
+  {
+    title: 'Atenciones por paciente',
+    description: 'Historial médico de un paciente dentro de un operativo.',
+    endpoints: [
+      'GET /reports/operations/patients/attentions/pdf?operationId=&patientId=',
+      'GET /reports/operations/patients/attentions/excel?operationId=&patientId=',
+    ],
+  },
+]
