@@ -17,9 +17,12 @@
     "dist:mac": "npm run transpile:electron && npm run build && electron-builder --mac --arm64"
   },
   "dependencies": {
+    "@untitledui/icons": "^0.0.22",
     "axios": "^1.15.2",
     "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react-aria-components": "^1.17.0",
+    "react-dom": "^19.2.5",
+    "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

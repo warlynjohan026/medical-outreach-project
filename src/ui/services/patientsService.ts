@@ -11,6 +11,7 @@ type ApiPatient = {
   address?: string
   allergies?: boolean | string
   birthDate?: string
+  bloodtype?: string
   bloodType?: string
   condition?: string
   document?: string
@@ -28,7 +29,7 @@ type ApiPatient = {
 
 export async function getPatients() {
   const response = await apiRequest<ApiPatient[] | { data?: ApiPatient[] }>(
-    '/patients/get-all?page=1&limit=10',
+    '/patients/get-all?page=1&limit=100',
   )
   const items = Array.isArray(response) ? response : (response.data ?? [])
   return items.map(normalizePatient)
@@ -102,7 +103,8 @@ function normalizePatient(patient: ApiPatient): Patient {
   return {
     address: patient.address ?? 'Sin dirección',
     allergies: normalizeAllergies(patient.allergies),
-    bloodType: patient.bloodType ?? 'No registrado',
+    birthDate: normalizeDate(patient.birthDate),
+    bloodType: normalizeOptionalText(patient.bloodtype, 'No registrado'),
     condition,
     document: patient.taxId ?? patient.document ?? 'Sin documento',
     firstName,
@@ -113,6 +115,28 @@ function normalizePatient(patient: ApiPatient): Patient {
     phone: patient.phoneNumber ?? patient.phone ?? 'Sin teléfono',
     tone: condition.toLowerCase() === 'ninguna' ? 'soft' : 'sun',
   }
+}
+
+function normalizeOptionalText(value: string | undefined, fallback: string) {
+  return value?.trim() ? value : fallback
+}
+
+function normalizeDate(value: string | undefined) {
+  if (!value) {
+    return 'Sin fecha'
+  }
+
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+    return value
+  }
+
+  const isoDateMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (isoDateMatch) {
+    const [, year, month, day] = isoDateMatch
+    return `${day}/${month}/${year}`
+  }
+
+  return value
 }
 
 function normalizeAllergies(allergies: ApiPatient['allergies']) {

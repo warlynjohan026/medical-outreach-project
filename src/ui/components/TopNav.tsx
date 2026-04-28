@@ -18,9 +18,11 @@ export function TopNav({ actionLabel, activeScreen, onNavigate }: TopNavProps) {
         </span>
         <div className="grid min-w-0 gap-0.5">
           <strong className="text-[15px] leading-tight text-[var(--primary-dark)]">
-            ConGracia Salud
+            Operativos para la comunidad{' '}
           </strong>
-          <span className="text-[11px] font-bold text-[var(--muted)]">Operativos comunitarios</span>
+          <span className="text-[11px] font-bold text-[var(--muted)]">
+            Aquí una pequeña app para ayudarte en tus operativos
+          </span>
         </div>
       </div>
 
@@ -45,7 +47,7 @@ export function TopNav({ actionLabel, activeScreen, onNavigate }: TopNavProps) {
       </nav>
 
       <div className="flex justify-start lg:justify-end">
-        <Button>{actionLabel}</Button>
+        {activeScreen === 'Operativos' ? null : <Button>{actionLabel}</Button>}
       </div>
     </header>
   )

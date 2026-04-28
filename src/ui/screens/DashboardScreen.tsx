@@ -73,10 +73,10 @@ export function DashboardScreen() {
       <section className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_330px]">
         <DataCard className="p-[22px] sm:p-[26px]">
           <span className="inline-flex min-h-[26px] items-center rounded-full bg-[var(--sun)] px-3 text-xs font-extrabold text-[#81611f]">
-            Servicio con propósito
+            Summary de todo lo que tenemos
           </span>
           <h1 className="m-0 mt-4 max-w-xl text-3xl leading-tight font-bold text-[var(--ink)] sm:text-[34px]">
-            Hola Jack.
+            Hola Gerily!
           </h1>
           <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
             {metrics.map((metric) => (
@@ -132,8 +132,8 @@ export function DashboardScreen() {
                     badge={patient.condition}
                     badgeTone={patient.tone}
                     icon={patient.initials}
-                    key={patient.id ?? patient.document}
-                    meta={`${patient.document} | ${patient.address}`}
+                    key={patient.document}
+                    meta={`Cédula/Pasaporte: ${patient.document} | Teléfono ${patient.phone}`}
                     title={patient.name}
                   />
                 ))
@@ -156,7 +156,7 @@ export function DashboardScreen() {
                     badgeTone={attention.tone}
                     icon={attention.day}
                     key={attention.id ?? `${attention.patientId}-${attention.date}`}
-                    meta={`${attention.doctor} | ${attention.medication}`}
+                    meta={`Atendido por: ${attention.doctor} | En fecha: ${attention.date}`}
                     title={attention.patient}
                   />
                 ))

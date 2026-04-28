@@ -40,6 +40,7 @@ export type UpdateOutreachPayload = Partial<CreateOutreachPayload>
 export type Patient = {
   address: string
   allergies: string
+  birthDate: string
   bloodType: string
   condition: string
   document: string

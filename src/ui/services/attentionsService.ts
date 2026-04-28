@@ -13,15 +13,36 @@ type ApiAttention = {
   doctor?: string
   id?: string | number
   medication?: string
-  operativeId?: string | number
-  patient?: string
-  patientId?: string | number
+  medicalOutreach?: ApiAttentionOutreach | string
+  operative?: ApiAttentionOutreach | string
+  operativeId?: ApiAttentionOutreach | string | number
+  patient?: ApiAttentionPatient | string
+  patientId?: ApiAttentionPatient | string | number
   patientName?: string
+}
+
+type ApiAttentionPatient = {
+  _id?: string
+  document?: string
+  firstName?: string
+  id?: string | number
+  lastName?: string
+  name?: string
+  surname?: string
+  taxId?: string
+}
+
+type ApiAttentionOutreach = {
+  _id?: string
+  id?: string | number
+  location?: string
+  name?: string
+  title?: string
 }
 
 export async function getAttentions() {
   const response = await apiRequest<ApiAttention[] | { data?: ApiAttention[] }>(
-    '/medical-attentions/get-attentions?page=1&limit=10',
+    '/medical-attentions/get-attentions?page=1&limit=100',
   )
   const items = Array.isArray(response) ? response : (response.data ?? [])
   return items.map(normalizeAttention)
@@ -90,8 +111,9 @@ function unwrapAttention(response: ApiAttention | { data?: ApiAttention }): ApiA
 
 function normalizeAttention(attention: ApiAttention): Attention {
   const date = normalizeDate(attention.attentionDate ?? attention.date)
-  const patientId = attention.patientId?.toString() ?? ''
-  const operativeId = attention.operativeId?.toString() ?? ''
+  const patientId = normalizePatientId(attention)
+  const operativeId = normalizeOperativeId(attention)
+  const patientName = normalizePatientName(attention, patientId)
 
   return {
     date,
@@ -100,11 +122,92 @@ function normalizeAttention(attention: ApiAttention): Attention {
     id: attention.id?.toString() ?? attention._id,
     medication: attention.medication ?? 'Sin medicamento',
     operativeId,
-    patient: attention.patientName ?? attention.patient ?? `Paciente ${patientId || 'sin ID'}`,
+    patient: patientName,
     patientId,
     status: date === currentDisplayDate() ? 'Hoy' : date.slice(3, 5) || 'Fecha',
     tone: date === currentDisplayDate() ? 'sun' : 'blue',
   }
+}
+
+function normalizePatientId(attention: ApiAttention) {
+  if (typeof attention.patientId === 'string' || typeof attention.patientId === 'number') {
+    return attention.patientId.toString()
+  }
+
+  if (typeof attention.patientId === 'object' && attention.patientId) {
+    return getObjectId(attention.patientId)
+  }
+
+  if (typeof attention.patient === 'object' && attention.patient) {
+    return getObjectId(attention.patient)
+  }
+
+  return ''
+}
+
+function normalizePatientName(attention: ApiAttention, patientId: string) {
+  if (attention.patientName?.trim()) {
+    return attention.patientName
+  }
+
+  if (typeof attention.patient === 'string' && attention.patient.trim()) {
+    return attention.patient
+  }
+
+  if (typeof attention.patient === 'object' && attention.patient) {
+    const firstName = attention.patient.firstName ?? attention.patient.name ?? ''
+    const lastName = attention.patient.lastName ?? attention.patient.surname ?? ''
+    const fullName = [firstName, lastName].filter(Boolean).join(' ')
+
+    return fullName || attention.patient.taxId || attention.patient.document || `Paciente ${patientId || 'sin ID'}`
+  }
+
+  if (typeof attention.patientId === 'object' && attention.patientId) {
+    const firstName = attention.patientId.firstName ?? attention.patientId.name ?? ''
+    const lastName = attention.patientId.lastName ?? attention.patientId.surname ?? ''
+    const fullName = [firstName, lastName].filter(Boolean).join(' ')
+
+    return (
+      fullName ||
+      attention.patientId.taxId ||
+      attention.patientId.document ||
+      `Paciente ${patientId || 'sin ID'}`
+    )
+  }
+
+  return `Paciente ${patientId || 'sin ID'}`
+}
+
+function normalizeOperativeId(attention: ApiAttention) {
+  if (typeof attention.operativeId === 'string' || typeof attention.operativeId === 'number') {
+    return attention.operativeId.toString()
+  }
+
+  if (typeof attention.operativeId === 'object' && attention.operativeId) {
+    return getObjectId(attention.operativeId)
+  }
+
+  if (typeof attention.operative === 'object' && attention.operative) {
+    return getObjectId(attention.operative)
+  }
+
+  if (typeof attention.medicalOutreach === 'object' && attention.medicalOutreach) {
+    return getObjectId(attention.medicalOutreach)
+  }
+
+  if (typeof attention.operative === 'string') {
+    return attention.operative
+  }
+
+  if (typeof attention.medicalOutreach === 'string') {
+    return attention.medicalOutreach
+  }
+
+  return ''
+}
+
+function getObjectId(value: { _id?: string; id?: string | number }) {
+  return value.id?.toString() ?? value._id ?? ''
 }
 
 function normalizeDate(value: string | undefined) {

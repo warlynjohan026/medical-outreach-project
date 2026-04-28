@@ -42,10 +42,18 @@ export async function createOutreach(payload: CreateOutreachPayload) {
 }
 
 export async function searchOutreaches(params: SearchOutreachParams) {
-  const query = buildSearchQuery(params)
-  const response = await apiRequest<ApiOutreach[] | { data?: ApiOutreach[] }>(
-    `/medical-outreach/search?${query.toString()}`,
-  )
+  const shouldSearchAllStatuses = !params.status?.trim()
+
+  if (shouldSearchAllStatuses) {
+    const [activeOutreaches, closedOutreaches] = await Promise.all([
+      searchOutreachesByStatus(params, '1'),
+      searchOutreachesByStatus(params, '0'),
+    ])
+
+    return mergeOutreaches(activeOutreaches, closedOutreaches)
+  }
+
+  const response = await fetchSearchOutreaches(params)
 
   const items = Array.isArray(response) ? response : (response.data ?? [])
   return items.map(normalizeOutreach)
@@ -93,6 +101,30 @@ function buildSearchQuery(params: SearchOutreachParams) {
   })
 
   return query
+}
+
+function fetchSearchOutreaches(params: SearchOutreachParams) {
+  const query = buildSearchQuery(params)
+  return apiRequest<ApiOutreach[] | { data?: ApiOutreach[] }>(
+    `/medical-outreach/search?${query.toString()}`,
+  )
+}
+
+async function searchOutreachesByStatus(params: SearchOutreachParams, status: '0' | '1') {
+  const response = await fetchSearchOutreaches({ ...params, status })
+  const items = Array.isArray(response) ? response : (response.data ?? [])
+  return items.map(normalizeOutreach)
+}
+
+function mergeOutreaches(...outreachGroups: Outreach[][]) {
+  const outreachesByKey = new Map<string, Outreach>()
+
+  outreachGroups.flat().forEach((outreach) => {
+    const key = outreach.id ?? `${outreach.name}-${outreach.date}-${outreach.location}`
+    outreachesByKey.set(key, outreach)
+  })
+
+  return Array.from(outreachesByKey.values())
 }
 
 function unwrapOutreach(response: ApiOutreach | { data?: ApiOutreach }): ApiOutreach {
