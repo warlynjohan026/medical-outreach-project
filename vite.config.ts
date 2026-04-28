@@ -11,6 +11,12 @@ export default defineConfig({
   },
   server: {
     port: 2626,
+    proxy: {
+      '/medical-outreach-project': {
+        changeOrigin: true,
+        target: 'http://localhost:3000',
+      },
+    },
     strictPort: true,
   },
 })

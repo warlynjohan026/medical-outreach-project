@@ -99,6 +99,7 @@ export const attentions: Attention[] = [
     doctor: 'Dra. Santos',
     medication: 'Acetaminofen',
     date: '27/04/2026',
+    operative: 'Jornada Batey Aleman',
     operativeId: '1',
     status: 'Hoy',
     patientId: '1',
@@ -110,6 +111,7 @@ export const attentions: Attention[] = [
     doctor: 'Dr. Peña',
     medication: 'Loratadina',
     date: '27/04/2026',
+    operative: 'Jornada Batey Aleman',
     operativeId: '1',
     status: 'Hoy',
     patientId: '2',
@@ -121,6 +123,7 @@ export const attentions: Attention[] = [
     doctor: 'Dra. Soto',
     medication: 'Suero oral',
     date: '24/04/2026',
+    operative: 'Chequeo familiar',
     operativeId: '1',
     status: 'Abr',
     patientId: '3',
@@ -131,23 +134,86 @@ export const attentions: Attention[] = [
 export const reportCards: ReportOption[] = [
   {
     title: 'Operativos',
-    description: 'Listado general de jornadas médicas por fecha, ubicación y estado.',
-    endpoints: ['GET /reports/operations/pdf', 'GET /reports/operations/excel'],
+    description: 'Reporte general de los operativos realizados.',
+    endpoints: [
+      { format: 'pdf', method: 'GET', path: '/reports/operations/pdf' },
+      { format: 'excel', method: 'GET', path: '/reports/operations/excel' },
+    ],
   },
   {
     title: 'Pacientes por operativo',
-    description: 'Personas atendidas dentro de una jornada específica.',
+    description: 'Personas atendidas dentro de un operativo específico.',
     endpoints: [
-      'GET /reports/operations/patients/pdf?id=',
-      'GET /reports/operations/patients/excel?id=',
+      {
+        format: 'pdf',
+        method: 'GET',
+        parameters: [
+          {
+            label: 'Operativo',
+            name: 'id',
+            placeholder: 'Selecciona un operativo',
+            source: 'outreaches',
+          },
+        ],
+        path: '/reports/operations/patients/pdf',
+      },
+      {
+        format: 'excel',
+        method: 'GET',
+        parameters: [
+          {
+            label: 'Operativo',
+            name: 'id',
+            placeholder: 'Selecciona un operativo',
+            source: 'outreaches',
+          },
+        ],
+        path: '/reports/operations/patients/excel',
+      },
     ],
   },
   {
     title: 'Atenciones por paciente',
     description: 'Historial médico de un paciente dentro de un operativo.',
     endpoints: [
-      'GET /reports/operations/patients/attentions/pdf?operationId=&patientId=',
-      'GET /reports/operations/patients/attentions/excel?operationId=&patientId=',
+      {
+        format: 'pdf',
+        method: 'GET',
+        parameters: [
+          {
+            label: 'Operativo',
+            name: 'operationId',
+            placeholder: 'Selecciona un operativo',
+            source: 'outreaches',
+          },
+          {
+            label: 'Paciente',
+            name: 'patientId',
+            placeholder: 'Selecciona un paciente',
+            source: 'patients',
+          },
+        ],
+        path: '/reports/operations/patients/attentions/pdf',
+      },
+      {
+        format: 'excel',
+        method: 'GET',
+        parameters: [
+          {
+            label: 'Operativo',
+            name: 'operationId',
+            placeholder: 'Selecciona un operativo',
+            source: 'outreaches',
+          },
+          {
+            label: 'Paciente',
+            name: 'patientId',
+            placeholder: 'Selecciona un paciente',
+            source: 'patients',
+          },
+        ],
+        path: '/reports/operations/patients/attentions/excel',
+      },
     ],
   },
 ]

@@ -14,7 +14,7 @@ type DataRowProps = {
 
 export function DataRow({ badge, badgeTone = 'sun', icon, meta, title }: DataRowProps) {
   return (
-    <article className="grid min-h-[66px] grid-cols-[44px_minmax(0,1fr)] items-center gap-3.5 rounded-[18px] border border-[var(--line)] bg-white px-3.5 py-3 sm:grid-cols-[46px_minmax(0,1fr)_auto]">
+    <article className="motion-row grid min-h-[66px] grid-cols-[44px_minmax(0,1fr)] items-center gap-3.5 rounded-[18px] border border-[var(--line)] bg-white px-3.5 py-3 sm:grid-cols-[46px_minmax(0,1fr)_auto]">
       <span
         className={cn(
           'flex h-11 w-11 items-center justify-center rounded-[15px] text-[13px] font-black',

@@ -42,9 +42,10 @@ export function OutreachesScreen() {
 
   const hasPagination = outreaches.length > OUTREACHES_PER_PAGE
   const totalPages = Math.max(1, Math.ceil(outreaches.length / OUTREACHES_PER_PAGE))
+  const currentPage = Math.min(page, totalPages)
   const paginatedOutreaches = outreaches.slice(
-    (page - 1) * OUTREACHES_PER_PAGE,
-    page * OUTREACHES_PER_PAGE,
+    (currentPage - 1) * OUTREACHES_PER_PAGE,
+    currentPage * OUTREACHES_PER_PAGE,
   )
   const canSaveOutreach = Boolean(form.location.trim())
 
@@ -74,10 +75,6 @@ export function OutreachesScreen() {
       isMounted = false
     }
   }, [])
-
-  useEffect(() => {
-    setPage((currentPage) => Math.min(currentPage, totalPages))
-  }, [totalPages])
 
   async function handleFilterSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -264,7 +261,7 @@ export function OutreachesScreen() {
         />
       ) : null}
       <form
-        className="mb-[18px] grid grid-cols-1 gap-3 rounded-[24px] border border-[rgba(255,255,255,0.78)] bg-[rgba(255,255,255,0.72)] p-3 shadow-[0_10px_28px_rgba(28,28,34,0.04)] md:grid-cols-2 xl:grid-cols-[1fr_0.9fr_1fr_0.8fr_auto_auto]"
+        className="motion-card motion-stagger mb-[18px] grid grid-cols-1 gap-3 rounded-[24px] border border-[rgba(255,255,255,0.78)] bg-[rgba(255,255,255,0.72)] p-3 shadow-[0_10px_28px_rgba(28,28,34,0.04)] md:grid-cols-2 xl:grid-cols-[1fr_0.9fr_1fr_0.8fr_auto_auto]"
         onSubmit={handleFilterSubmit}
       >
         <FilterInput
@@ -288,9 +285,9 @@ export function OutreachesScreen() {
           value={filters.location ?? ''}
         />
         <label className="grid gap-1.5">
-          <span className="text-[11px] font-extrabold text-[var(--muted)]">Estado</span>
+          <span className="text-xs font-extrabold text-[var(--muted)]">Estado</span>
           <select
-            className="h-11 rounded-[14px] border border-[var(--line)] bg-white px-3 text-[13px] font-bold text-[var(--ink)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[rgba(94,200,189,0.4)]"
+            className="h-11 rounded-[14px] border border-[var(--line)] bg-white px-3 text-[13px] font-bold text-[var(--ink)] hover:border-[var(--line-strong)] focus:border-[var(--accent)] focus:shadow-[0_0_0_4px_rgba(94,200,189,0.12)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[rgba(94,200,189,0.4)]"
             onChange={(event) =>
               setFilters((currentFilters) => ({
                 ...currentFilters,
@@ -328,7 +325,7 @@ export function OutreachesScreen() {
 
       <section className="grid min-w-0 grid-cols-1 gap-[22px] lg:grid-cols-[minmax(0,1fr)_340px]">
         <TableCard.Root
-          className="min-w-0 overflow-hidden rounded-[30px] border border-[rgba(255,255,255,0.78)] bg-[rgba(255,255,255,0.88)] shadow-[0_16px_44px_rgba(28,28,34,0.06)]"
+          className="motion-card min-w-0 overflow-hidden rounded-[30px] border border-[rgba(255,255,255,0.78)] bg-[rgba(255,255,255,0.88)] shadow-[0_16px_44px_rgba(28,28,34,0.06)]"
           size="sm"
         >
           <TableCard.Header
@@ -351,21 +348,21 @@ export function OutreachesScreen() {
                 >
                   <Table.Header>
                     <Table.Head id="name" className="w-[34%] px-4">
-                      <span className="text-[11px] font-extrabold text-[var(--muted)]">Nombre</span>
+                      <span className="text-[12px] font-extrabold text-[var(--muted)]">Nombre</span>
                     </Table.Head>
                     <Table.Head id="location" className="w-[20%] px-4">
-                      <span className="text-[11px] font-extrabold text-[var(--muted)]">
+                      <span className="text-[12px] font-extrabold text-[var(--muted)]">
                         Ubicación
                       </span>
                     </Table.Head>
                     <Table.Head id="date" className="w-[14%] px-4">
-                      <span className="text-[11px] font-extrabold text-[var(--muted)]">Fecha</span>
+                      <span className="text-[12px] font-extrabold text-[var(--muted)]">Fecha</span>
                     </Table.Head>
                     <Table.Head id="status" className="w-[15%] px-4">
-                      <span className="text-[11px] font-extrabold text-[var(--muted)]">Estado</span>
+                      <span className="text-[12px] font-extrabold text-[var(--muted)]">Estado</span>
                     </Table.Head>
                     <Table.Head id="detail" className="w-[92px] px-4">
-                      <span className="block text-right text-[11px] font-extrabold text-[var(--muted)]">
+                      <span className="block text-right text-[12px] font-extrabold text-[var(--muted)]">
                         Detalle
                       </span>
                     </Table.Head>
@@ -387,7 +384,7 @@ export function OutreachesScreen() {
             <div className="flex flex-col gap-3 border-t border-[var(--line)] px-[22px] py-4 sm:flex-row sm:items-center sm:justify-between">
               <Button
                 className="disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={page === 1}
+                disabled={currentPage === 1}
                 onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
                 type="button"
                 variant="secondary"
@@ -395,11 +392,11 @@ export function OutreachesScreen() {
                 Anterior
               </Button>
               <span className="text-center text-[13px] font-bold text-[var(--muted)]">
-                Página {page} de {totalPages}
+                Página {currentPage} de {totalPages}
               </span>
               <Button
                 className="disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={page === totalPages}
+                disabled={currentPage === totalPages}
                 onClick={() => setPage((currentPage) => Math.min(totalPages, currentPage + 1))}
                 type="button"
                 variant="secondary"
@@ -435,7 +432,7 @@ export function OutreachesScreen() {
             <label className="grid gap-[7px]">
               <span className="text-xs font-extrabold text-[var(--muted)]">Estado</span>
               <select
-                className="min-h-[42px] w-full rounded-[13px] border border-[var(--line)] bg-white px-3 text-[13px] text-[var(--ink)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[rgba(94,200,189,0.4)]"
+                className="min-h-[42px] w-full rounded-[13px] border border-[var(--line)] bg-white px-3 text-[13px] text-[var(--ink)] hover:border-[var(--line-strong)] focus:border-[var(--accent)] focus:shadow-[0_0_0_4px_rgba(94,200,189,0.12)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[rgba(94,200,189,0.4)]"
                 onChange={(event) =>
                   setForm((currentForm) => ({
                     ...currentForm,
@@ -476,21 +473,21 @@ export function OutreachesScreen() {
 
 function OutreachRow({ onView, outreach }: { onView: () => void; outreach: Outreach }) {
   return (
-    <Table.Row id={outreach.id ?? outreach.name} className="align-top">
+    <Table.Row id={outreach.id ?? outreach.name} className="motion-row align-top">
       <Table.Cell className="px-4 py-4 align-top">
         <div className="flex min-w-0 items-start gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[var(--soft)] text-[13px] font-black text-[var(--primary-dark)]">
             {outreach.initials}
           </span>
           <div className="min-w-0">
-            <strong className="block text-sm leading-5 break-words text-[var(--ink)]">
+            <span className="block text-sm leading-5 break-words text-[var(--ink)]">
               {outreach.name}
-            </strong>
+            </span>
             <span className="text-xs text-[var(--muted)]">ID {outreach.id ?? '-'}</span>
           </div>
         </div>
       </Table.Cell>
-      <Table.Cell className="px-4 py-4 align-top text-sm leading-5 font-semibold break-words text-[var(--ink)]">
+      <Table.Cell className="px-4 py-4 align-top text-sm leading-5 break-words text-[var(--ink)]">
         {outreach.location}
       </Table.Cell>
       <Table.Cell className="px-4 py-4 align-top text-sm whitespace-nowrap text-[var(--muted)]">
@@ -503,7 +500,7 @@ function OutreachRow({ onView, outreach }: { onView: () => void; outreach: Outre
         <div className="flex justify-end">
           <button
             aria-label={`Ver operativo ${outreach.name}`}
-            className="inline-flex h-8 min-w-[72px] items-center justify-center gap-1 rounded-[9px] border border-[var(--line)] bg-white px-2 text-[10px] font-bold whitespace-nowrap text-[var(--primary-dark)] transition hover:border-[var(--accent)] hover:bg-[var(--soft)]"
+            className="inline-flex h-8 min-w-[72px] items-center justify-center gap-1 rounded-[9px] border border-[var(--line)] bg-white px-2 text-[10px] font-bold whitespace-nowrap text-[var(--primary-dark)] transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:bg-[var(--soft)]"
             onClick={onView}
             type="button"
           >
@@ -534,8 +531,8 @@ function OutreachDetailCard({
   const isClosed = outreach.statusValue === '0'
 
   return (
-    <div className="fixed inset-0 z-30 grid place-items-center bg-[rgba(32,44,42,0.28)] px-4 py-6 backdrop-blur-[2px]">
-      <section className="w-full max-w-[560px] overflow-hidden rounded-[28px] border border-[rgba(255,255,255,0.88)] bg-white shadow-[0_24px_80px_rgba(28,28,34,0.22)]">
+    <div className="modal-scrim fixed inset-0 z-30 grid place-items-center bg-[rgba(32,44,42,0.28)] px-4 py-6 backdrop-blur-[2px]">
+      <section className="modal-panel w-full max-w-[560px] overflow-hidden rounded-[28px] border border-[rgba(255,255,255,0.88)] bg-white shadow-[0_24px_80px_rgba(28,28,34,0.22)]">
         <div className="flex items-start justify-between gap-4 border-b border-[var(--line)] px-5 py-4">
           <div className="flex min-w-0 items-center gap-3">
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-[var(--soft)] text-[14px] font-black text-[var(--primary-dark)]">
@@ -550,7 +547,7 @@ function OutreachDetailCard({
           </div>
           <button
             aria-label="Cerrar detalle"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] border border-[var(--line)] bg-white text-[var(--muted)]"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] border border-[var(--line)] bg-white text-[var(--muted)] hover:border-[var(--accent)] hover:bg-[var(--soft)] hover:text-[var(--primary-dark)]"
             onClick={onClose}
             type="button"
           >
@@ -558,7 +555,7 @@ function OutreachDetailCard({
           </button>
         </div>
 
-        <div className="grid gap-3 px-5 py-5 sm:grid-cols-2">
+        <div className="motion-stagger grid gap-3 px-5 py-5 sm:grid-cols-2">
           <DetailItem label="Nombre" value={outreach.name} />
           <DetailItem
             label="Estado"
@@ -583,7 +580,7 @@ function OutreachDetailCard({
             {isClosing ? 'Cerrando...' : 'Cerrar operativo'}
           </Button>
           <button
-            className="inline-flex min-h-[38px] items-center justify-center rounded-[10px] border border-[var(--rose)] bg-[var(--rose)] px-[18px] text-[13px] font-extrabold text-[#884a45] transition focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[rgba(94,200,189,0.4)]"
+            className="inline-flex min-h-[38px] items-center justify-center rounded-[10px] border border-[var(--rose)] bg-[var(--rose)] px-[18px] text-[13px] font-extrabold text-[#884a45] transition hover:-translate-y-0.5 hover:shadow-[0_10px_22px_rgba(136,74,69,0.12)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[rgba(94,200,189,0.4)]"
             onClick={onDelete}
             type="button"
           >
@@ -607,8 +604,8 @@ function ConfirmCloseOutreachDialog({
   outreach: Outreach
 }) {
   return (
-    <div className="fixed inset-0 z-40 grid place-items-center bg-[rgba(32,44,42,0.32)] px-4 py-6 backdrop-blur-[2px]">
-      <section className="w-full max-w-[420px] rounded-[24px] border border-[rgba(255,255,255,0.9)] bg-white p-5 shadow-[0_24px_70px_rgba(28,28,34,0.24)]">
+    <div className="modal-scrim fixed inset-0 z-40 grid place-items-center bg-[rgba(32,44,42,0.32)] px-4 py-6 backdrop-blur-[2px]">
+      <section className="modal-panel w-full max-w-[420px] rounded-[24px] border border-[rgba(255,255,255,0.9)] bg-white p-5 shadow-[0_24px_70px_rgba(28,28,34,0.24)]">
         <h2 className="m-0 text-lg font-bold text-[var(--ink)]">Cerrar operativo</h2>
         <p className="mb-0 mt-2 text-sm font-semibold text-[var(--muted)]">
           ¿Seguro que quieres cerrar "{outreach.name}"? Esta acción cambiará su estado a cerrado.
@@ -647,8 +644,8 @@ function Spinner({ tone = 'light' }: { tone?: 'light' | 'primary' }) {
 
 function DetailItem({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="rounded-[16px] border border-[var(--line)] bg-[var(--soft)] px-4 py-3">
-      <span className="mb-1 block text-[11px] font-extrabold text-[var(--muted)]">{label}</span>
+    <div className="motion-row rounded-[16px] border border-[var(--line)] bg-[var(--soft)] px-4 py-3">
+      <span className="mb-1 block text-xs font-extrabold text-[var(--muted)]">{label}</span>
       <div className="text-sm font-bold break-words text-[var(--ink)]">{value}</div>
     </div>
   )
@@ -667,9 +664,9 @@ function FilterInput({
 }) {
   return (
     <label className="grid gap-1.5">
-      <span className="text-[11px] font-extrabold text-[var(--muted)]">{label}</span>
+      <span className="text-xs font-extrabold text-[var(--muted)]">{label}</span>
       <input
-        className="h-11 rounded-[14px] border border-[var(--line)] bg-white px-3 text-[13px] font-bold text-[var(--ink)] placeholder:text-[var(--muted)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[rgba(94,200,189,0.4)]"
+        className="h-11 rounded-[14px] border border-[var(--line)] bg-white px-3 text-[13px] font-bold text-[var(--ink)] placeholder:text-[var(--muted)] hover:border-[var(--line-strong)] focus:border-[var(--accent)] focus:shadow-[0_0_0_4px_rgba(94,200,189,0.12)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[rgba(94,200,189,0.4)]"
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         value={value}

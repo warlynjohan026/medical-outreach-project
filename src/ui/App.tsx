@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { AppShell } from './components/AppShell'
 import { TopNav } from './components/TopNav'
-import { primaryActions } from './data/mockData'
 import { AttentionsScreen } from './screens/AttentionsScreen'
 import { DashboardScreen } from './screens/DashboardScreen'
 import { OutreachesScreen } from './screens/OutreachesScreen'
@@ -11,16 +10,17 @@ import type { Screen } from './types'
 
 function App() {
   const [activeScreen, setActiveScreen] = useState<Screen>('Inicio')
-  const currentAction = useMemo(() => primaryActions[activeScreen], [activeScreen])
 
   return (
     <AppShell>
       <TopNav
         activeScreen={activeScreen}
-        actionLabel={currentAction}
         onNavigate={setActiveScreen}
       />
-      <main className="mx-auto w-full max-w-[1260px] px-3.5 pb-8 pt-[18px] sm:px-[34px] sm:pb-11 sm:pt-6">
+      <main
+        className="app-page mx-auto w-full max-w-[1260px] px-3.5 pb-8 pt-[18px] sm:px-[34px] sm:pb-11 sm:pt-6"
+        key={activeScreen}
+      >
         {renderScreen(activeScreen)}
       </main>
     </AppShell>

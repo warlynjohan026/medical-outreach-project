@@ -93,6 +93,10 @@ function buildSearchQuery(params: SearchAttentionParams) {
   const query = new URLSearchParams()
 
   Object.entries(params).forEach(([key, value]) => {
+    if (key === 'operativeName' || key === 'patientName') {
+      return
+    }
+
     if (value?.trim()) {
       query.set(key, value.trim())
     }
@@ -114,6 +118,7 @@ function normalizeAttention(attention: ApiAttention): Attention {
   const patientId = normalizePatientId(attention)
   const operativeId = normalizeOperativeId(attention)
   const patientName = normalizePatientName(attention, patientId)
+  const operativeName = normalizeOperativeName(attention, operativeId)
 
   return {
     date,
@@ -121,12 +126,41 @@ function normalizeAttention(attention: ApiAttention): Attention {
     doctor: attention.doctor ?? 'Sin médico',
     id: attention.id?.toString() ?? attention._id,
     medication: attention.medication ?? 'Sin medicamento',
+    operative: operativeName,
     operativeId,
     patient: patientName,
     patientId,
     status: date === currentDisplayDate() ? 'Hoy' : date.slice(3, 5) || 'Fecha',
     tone: date === currentDisplayDate() ? 'sun' : 'blue',
   }
+}
+
+function normalizeOperativeName(attention: ApiAttention, operativeId: string) {
+  if (typeof attention.operativeId === 'object' && attention.operativeId) {
+    return formatOperativeName(attention.operativeId, operativeId)
+  }
+
+  if (typeof attention.operative === 'object' && attention.operative) {
+    return formatOperativeName(attention.operative, operativeId)
+  }
+
+  if (typeof attention.medicalOutreach === 'object' && attention.medicalOutreach) {
+    return formatOperativeName(attention.medicalOutreach, operativeId)
+  }
+
+  if (typeof attention.operative === 'string' && attention.operative.trim()) {
+    return attention.operative
+  }
+
+  if (typeof attention.medicalOutreach === 'string' && attention.medicalOutreach.trim()) {
+    return attention.medicalOutreach
+  }
+
+  return `Operativo ${operativeId || 'sin ID'}`
+}
+
+function formatOperativeName(operative: ApiAttentionOutreach, operativeId: string) {
+  return operative.name ?? operative.title ?? operative.location ?? `Operativo ${operativeId || 'sin ID'}`
 }
 
 function normalizePatientId(attention: ApiAttention) {
@@ -146,26 +180,8 @@ function normalizePatientId(attention: ApiAttention) {
 }
 
 function normalizePatientName(attention: ApiAttention, patientId: string) {
-  if (attention.patientName?.trim()) {
-    return attention.patientName
-  }
-
-  if (typeof attention.patient === 'string' && attention.patient.trim()) {
-    return attention.patient
-  }
-
-  if (typeof attention.patient === 'object' && attention.patient) {
-    const firstName = attention.patient.firstName ?? attention.patient.name ?? ''
-    const lastName = attention.patient.lastName ?? attention.patient.surname ?? ''
-    const fullName = [firstName, lastName].filter(Boolean).join(' ')
-
-    return fullName || attention.patient.taxId || attention.patient.document || `Paciente ${patientId || 'sin ID'}`
-  }
-
   if (typeof attention.patientId === 'object' && attention.patientId) {
-    const firstName = attention.patientId.firstName ?? attention.patientId.name ?? ''
-    const lastName = attention.patientId.lastName ?? attention.patientId.surname ?? ''
-    const fullName = [firstName, lastName].filter(Boolean).join(' ')
+    const fullName = formatPatientFullName(attention.patientId)
 
     return (
       fullName ||
@@ -175,7 +191,28 @@ function normalizePatientName(attention: ApiAttention, patientId: string) {
     )
   }
 
+  if (typeof attention.patient === 'object' && attention.patient) {
+    const fullName = formatPatientFullName(attention.patient)
+
+    return fullName || attention.patient.taxId || attention.patient.document || `Paciente ${patientId || 'sin ID'}`
+  }
+
+  if (attention.patientName?.trim()) {
+    return attention.patientName
+  }
+
+  if (typeof attention.patient === 'string' && attention.patient.trim()) {
+    return attention.patient
+  }
+
   return `Paciente ${patientId || 'sin ID'}`
+}
+
+function formatPatientFullName(patient: ApiAttentionPatient) {
+  const firstName = patient.firstName ?? patient.name ?? ''
+  const lastName = patient.lastName ?? patient.surname ?? ''
+
+  return [firstName, lastName].filter(Boolean).join(' ')
 }
 
 function normalizeOperativeId(attention: ApiAttention) {

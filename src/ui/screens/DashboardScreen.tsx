@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Button } from '../components/Button'
 import { DataCard } from '../components/DataCard'
 import { DataRow } from '../components/DataRow'
 import { MetricCard } from '../components/MetricCard'
 import { getAttentions } from '../services/attentionsService'
-import { getOutreaches } from '../services/outreachesService'
+import { searchOutreaches } from '../services/outreachesService'
 import { getPatients } from '../services/patientsService'
 import type { Attention, Metric, Outreach, Patient } from '../types'
 
@@ -18,7 +17,11 @@ export function DashboardScreen() {
   useEffect(() => {
     let isMounted = true
 
-    Promise.all([getOutreaches(), getPatients(), getAttentions()])
+    Promise.all([
+      searchOutreaches({ location: '', name: '', operativeDate: '', status: '' }),
+      getPatients(),
+      getAttentions(),
+    ])
       .then(([outreachesData, patientsData, attentionsData]) => {
         if (isMounted) {
           setOutreaches(outreachesData)
@@ -62,7 +65,6 @@ export function DashboardScreen() {
       },
       { value: patients.length.toLocaleString(), label: 'Pacientes', tone: 'accent' },
       { value: attentions.length.toLocaleString(), label: 'Atenciones', tone: 'warning' },
-      { value: '0', label: 'Reportes', tone: 'coral' },
     ],
     [activeOutreaches.length, attentions.length, patients.length],
   )
@@ -73,19 +75,19 @@ export function DashboardScreen() {
       <section className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_330px]">
         <DataCard className="p-[22px] sm:p-[26px]">
           <span className="inline-flex min-h-[26px] items-center rounded-full bg-[var(--sun)] px-3 text-xs font-extrabold text-[#81611f]">
-            Summary de todo lo que tenemos
+            Summary
           </span>
           <h1 className="m-0 mt-4 max-w-xl text-3xl leading-tight font-bold text-[var(--ink)] sm:text-[34px]">
-            Hola Gerily!
+            Hola DOE!
           </h1>
-          <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div className="motion-stagger mt-5 grid grid-cols-1 gap-3 md:grid-cols-3">
             {metrics.map((metric) => (
               <MetricCard key={metric.label} {...metric} />
             ))}
           </div>
         </DataCard>
 
-        <aside className="rounded-[30px] border border-[rgba(255,255,255,0.78)] bg-[var(--primary)] p-[22px] text-white shadow-[0_22px_54px_rgba(44,122,123,0.22)] sm:p-6">
+        <aside className="motion-card rounded-[30px] border border-[rgba(255,255,255,0.78)] bg-[var(--primary)] p-[22px] text-white shadow-[0_22px_54px_rgba(44,122,123,0.22)] sm:p-6">
           <span className="inline-flex min-h-[26px] items-center rounded-full bg-[var(--sun)] px-3 text-xs font-extrabold text-[#81611f]">
             Operativo de hoy
           </span>
@@ -107,7 +109,6 @@ export function DashboardScreen() {
               <span className="text-[13px] text-[#ddf5f2]">atenciones</span>
             </div>
           </div>
-          <Button variant="secondary">Abrir operativo</Button>
           <div className="mt-[18px] grid gap-1 rounded-[20px] bg-[rgba(255,255,255,0.16)] p-4 text-[#eefdf9]">
             <strong>“Servimos porque Cristo nos sirvió primero.”</strong>
             <span className="text-[13px] text-[#ddf5f2]">
@@ -119,7 +120,7 @@ export function DashboardScreen() {
 
       <section className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <DataCard title="Pacientes recientes">
-          <div className="grid gap-3 px-[22px] pb-6 pt-[18px]">
+          <div className="motion-stagger grid gap-3 px-[22px] pb-6 pt-[18px]">
             {isLoading ? (
               <StatusMessage message="Cargando pacientes..." />
             ) : patients.length === 0 ? (
@@ -142,7 +143,7 @@ export function DashboardScreen() {
         </DataCard>
 
         <DataCard title="Atenciones recientes">
-          <div className="grid gap-3 px-[22px] pb-6 pt-[18px]">
+          <div className="motion-stagger grid gap-3 px-[22px] pb-6 pt-[18px]">
             {isLoading ? (
               <StatusMessage message="Cargando atenciones..." />
             ) : attentions.length === 0 ? (

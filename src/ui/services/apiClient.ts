@@ -1,4 +1,23 @@
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/medical-outreach-project/v1'
+const DEFAULT_API_URL = import.meta.env.DEV
+  ? '/medical-outreach-project/v1'
+  : 'http://localhost:3000/medical-outreach-project/v1'
+
+export const API_URL = import.meta.env.DEV
+  ? DEFAULT_API_URL
+  : (import.meta.env.VITE_API_URL ?? DEFAULT_API_URL)
+
+export function buildApiUrl(path: string, params?: Record<string, string>) {
+  const rawUrl = `${API_URL.replace(/\/$/, '')}${path}`
+  const url = new URL(rawUrl, window.location.origin)
+
+  Object.entries(params ?? {}).forEach(([key, value]) => {
+    if (value.trim()) {
+      url.searchParams.set(key, value.trim())
+    }
+  })
+
+  return url.toString()
+}
 
 type ApiRequestOptions = Omit<RequestInit, 'body'> & {
   body?: unknown
@@ -12,7 +31,7 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
     headers.set('Content-Type', 'application/json')
   }
 
-  const response = await fetch(`${API_URL.replace(/\/$/, '')}${path}`, {
+  const response = await fetch(buildApiUrl(path), {
     ...options,
     body,
     headers,

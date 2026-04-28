@@ -80,6 +80,7 @@ export type Attention = {
   doctor: string
   id?: string
   medication: string
+  operative: string
   patient: string
   patientId: string
   operativeId: string
@@ -98,16 +99,30 @@ export type CreateAttentionPayload = {
 export type SearchAttentionParams = {
   attentionDate?: string
   doctor?: string
-  id?: string
-  medication?: string
-  operativeId?: string
-  patientId?: string
+  operativeName?: string
+  patientName?: string
 }
 
 export type UpdateAttentionPayload = Partial<CreateAttentionPayload>
 
+export type ReportFormat = 'pdf' | 'excel'
+
+export type ReportParameter = {
+  label: string
+  name: string
+  placeholder: string
+  source?: 'outreaches' | 'patients'
+}
+
+export type ReportEndpoint = {
+  format: ReportFormat
+  method: 'GET'
+  parameters?: ReportParameter[]
+  path: string
+}
+
 export type ReportOption = {
   description: string
-  endpoints: string[]
+  endpoints: ReportEndpoint[]
   title: string
 }

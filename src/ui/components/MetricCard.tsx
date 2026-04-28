@@ -12,7 +12,7 @@ export function MetricCard({ label, tone, value }: Metric) {
   return (
     <div
       className={cn(
-        'relative min-h-[86px] overflow-hidden rounded-[18px] border border-[rgba(255,255,255,0.76)] bg-[rgba(255,255,255,0.76)] px-4 pb-3.5 pt-4 shadow-[0_10px_28px_rgba(28,28,34,0.06)] after:absolute after:right-4 after:bottom-3.5 after:left-4 after:h-1 after:rounded-full',
+        'motion-row relative min-h-[86px] overflow-hidden rounded-[18px] border border-[rgba(255,255,255,0.76)] bg-[rgba(255,255,255,0.76)] px-4 pb-3.5 pt-4 shadow-[0_10px_28px_rgba(28,28,34,0.06)] after:absolute after:right-4 after:bottom-3.5 after:left-4 after:h-1 after:rounded-full',
         metricTones[tone],
       )}
     >

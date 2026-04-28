@@ -11,7 +11,7 @@ export function DataCard({ children, className, title }: DataCardProps) {
   return (
     <section
       className={cn(
-        'rounded-[30px] border border-[rgba(255,255,255,0.78)] bg-[rgba(255,255,255,0.88)] shadow-[0_16px_44px_rgba(28,28,34,0.06)]',
+        'motion-card rounded-[30px] border border-[rgba(255,255,255,0.78)] bg-[rgba(255,255,255,0.88)] shadow-[0_16px_44px_rgba(28,28,34,0.06)]',
         className,
       )}
     >
